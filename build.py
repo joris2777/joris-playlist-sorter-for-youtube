@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 DIST = ROOT / "dist"
-FILES = ["manifest.json", "content.js", "content.css",
+FILES = ["manifest.json", "content.js", "content.css", "page.js",
          "icons/icon16.png", "icons/icon48.png", "icons/icon128.png"]
 
 # Firefox needs an add-on ID and a data-collection declaration.

@@ -15,6 +15,7 @@ YouTube's "Save to playlist" dialog shows your playlists in recently-used order,
 • Keeps "Watch later" at the top
 • Adds a filter box. Just start typing to narrow the list
 • Press Enter to tick the first match
+• Click ↗ next to any playlist to open it in a new tab, without leaving the video
 • YouTube's keyboard shortcuts stay out of the way while you type
 
 NEW: your channel's Playlists tab, too
@@ -49,7 +50,7 @@ English
 Makes YouTube's "Save to playlist" dialog easier to use by sorting playlists alphabetically and adding a filter box.
 
 **Host permission justification (https://www.youtube.com/\*):**
-The extension needs to run on YouTube pages to sort and filter the playlist list inside YouTube's "Save to playlist" dialog. It only reads playlist names shown on the page and does not send them anywhere.
+The extension needs to run on YouTube pages to sort and filter the playlist list inside YouTube's "Save to playlist" dialog and on the channel Playlists tab, and to add a link that opens a playlist. It only reads playlist names and IDs on the page and does not send them anywhere.
 
 **Remote code:** No, I am not using remote code.
 

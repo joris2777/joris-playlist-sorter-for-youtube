@@ -4,7 +4,12 @@
   // If two copies are installed (say the store version and a GitHub one), only
   // the first to start works on the page; the other stays idle.
   const MARKER = 'data-joris-playlist-sorter';
-  if (document.documentElement.hasAttribute(MARKER)) return;
+  const DUPLICATE = 'data-joris-playlist-sorter-duplicate';
+  if (document.documentElement.hasAttribute(MARKER)) {
+    // Let the running copy know, so it can tell the user.
+    document.documentElement.setAttribute(DUPLICATE, '');
+    return;
+  }
   document.documentElement.setAttribute(MARKER, chrome.runtime.getManifest().version);
 
   // YouTube has shipped two layouts of the "Save to..." dialog; both are handled.
@@ -94,10 +99,26 @@
     return !!prev && prev.classList.contains('yps-filter-bar') && !owners.has(prev);
   };
 
+  const duplicateInstalled = () => document.documentElement.hasAttribute(DUPLICATE);
+
+  // A one-line hint in a filter bar (ours, or an older copy's) when the
+  // extension is installed twice, e.g. from the store and from GitHub.
+  function addDuplicateNote(bar) {
+    if (bar.querySelector('.yps-dup-note')) return;
+    const note = document.createElement('div');
+    note.className = 'yps-dup-note';
+    note.textContent =
+      "Two copies of Joris Playlist Sorter are installed. Remove one on your browser's Extensions page.";
+    bar.appendChild(note);
+  }
+
   function ensureFilter(listEl, layout) {
     let state = filters.get(listEl);
     if (state && state.input.isConnected) return state;
-    if (hasForeignBar(listEl)) return null;
+    if (hasForeignBar(listEl)) {
+      addDuplicateNote(listEl.previousElementSibling);
+      return null;
+    }
 
     const input = document.createElement('input');
     input.type = 'search';
@@ -142,6 +163,37 @@
     return state;
   }
 
+  // A small ↗ link on each "Save to..." row that opens that playlist in a new
+  // tab. page.js puts the playlist ID on the row as data-yps-playlist-id.
+  const VALID_ID = /^[A-Za-z0-9_-]{2,64}$/;
+  function ensureOpenLink(row) {
+    const id = row.getAttribute('data-yps-playlist-id');
+    let link = row.querySelector('.yps-open');
+    if (!id || !VALID_ID.test(id)) {
+      if (link) link.remove();
+      return;
+    }
+    const href = '/playlist?list=' + encodeURIComponent(id);
+    if (link) {
+      if (link.getAttribute('href') !== href) link.setAttribute('href', href);
+      return;
+    }
+    link = document.createElement('a');
+    link.className = 'yps-open';
+    link.setAttribute('href', href);
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.title = 'Open this playlist in a new tab';
+    link.setAttribute('aria-label', 'Open playlist in a new tab');
+    link.textContent = '↗';
+    // Keep YouTube from treating the click as "save to this playlist".
+    for (const type of ['click', 'mousedown', 'mouseup', 'pointerdown', 'pointerup', 'touchstart', 'touchend']) {
+      link.addEventListener(type, (e) => e.stopPropagation());
+    }
+    row.classList.add('yps-has-open');
+    row.appendChild(link);
+  }
+
   // The pinned bar needs an opaque background so playlists don't show through
   // it; copy it from the dialog so it matches both light and dark themes.
   function matchBackground(bar) {
@@ -170,7 +222,11 @@
   function ensureLibraryBar(listEl) {
     let state = filters.get(listEl);
     if (state && state.bar.isConnected) return state;
-    if (hasForeignBar(listEl.closest('ytd-grid-renderer') || listEl)) return null;
+    const anchor = listEl.closest('ytd-grid-renderer') || listEl;
+    if (hasForeignBar(anchor)) {
+      addDuplicateNote(anchor.previousElementSibling);
+      return null;
+    }
 
     const input = document.createElement('input');
     input.type = 'search';
@@ -248,6 +304,7 @@
         if (more.style.order !== order) more.style.order = order;
       }
       if (state.input.value) applyFilter(listEl, LIBRARY, state.input.value);
+      if (duplicateInstalled()) addDuplicateNote(state.bar);
       matchBackground(state.bar);
     }
   }
@@ -292,6 +349,8 @@
         listEl.classList.add('yps-sorted');
         const state = ensureFilter(listEl, layout);
         if (!state) continue;
+        for (const { el } of items) ensureOpenLink(el);
+        if (duplicateInstalled()) addDuplicateNote(state.bar);
         matchBackground(state.bar);
         if (state.input.value) applyFilter(listEl, layout, state.input.value);
         // Focus the filter each time the dialog opens.
@@ -315,7 +374,8 @@
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['hidden', 'aria-hidden'],
+    // data-yps-playlist-id: page.js tagged a row, so its ↗ link can be added.
+    attributeFilter: ['hidden', 'aria-hidden', 'data-yps-playlist-id'],
   });
 
   run();

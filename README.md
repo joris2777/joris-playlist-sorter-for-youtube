@@ -8,6 +8,7 @@ YouTube's **Save to playlist** dialog lists your playlists in "recently used" or
 - **Sorts playlists A–Z** (case-insensitive, with natural number order: "Part 2" before "Part 10"). "Watch later" stays on top.
 - **Adds a filter box** that's focused as soon as the dialog opens. Type part of a name to narrow the list.
 - After typing, **Enter** ticks the first matching playlist. **Esc** closes the dialog as usual.
+- **↗ on each playlist** opens that playlist in a new tab, so you can look through it without leaving the video. It doesn't save the video.
 - YouTube's keyboard shortcuts don't fire while you type in the box.
 
 **On your channel's Playlists tab** (youtube.com/@yourname/playlists), where YouTube only sorts by date:
@@ -17,6 +18,8 @@ YouTube's **Save to playlist** dialog lists your playlists in "recently used" or
 - On other channels' Playlists tabs it sorts what you've scrolled through.
 
 Sorting is visual only. Your playlists on YouTube are never changed.
+
+If the extension is installed twice (for example from the Chrome Web Store and from GitHub), only one copy runs, and it shows a short note asking you to remove the other.
 
 ## Privacy
 

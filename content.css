@@ -20,6 +20,7 @@
    YouTube's top bar while scrolling. */
 .yps-library-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   top: var(--ytd-masthead-height, 56px);
@@ -28,6 +29,39 @@
 
 .yps-library-bar .yps-filter {
   max-width: 400px;
+}
+
+/* "Open playlist" link on each "Save to..." row. */
+.yps-has-open {
+  position: relative;
+}
+
+.yps-open {
+  position: absolute;
+  top: 50%;
+  right: 56px;
+  z-index: 1;
+  transform: translateY(-50%);
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: var(--yt-spec-text-secondary, #606060);
+  font: 16px Roboto, Arial, sans-serif;
+  text-decoration: none;
+  opacity: 0.55;
+}
+
+.yps-open:hover,
+.yps-open:focus-visible {
+  opacity: 1;
+  background: var(--yt-spec-badge-chip-background, #f2f2f2);
+}
+
+/* Shown when the extension is installed twice. */
+.yps-dup-note {
+  flex-basis: 100%;
+  margin-top: 6px;
+  color: var(--yt-spec-text-secondary, #606060);
+  font: 12px Roboto, Arial, sans-serif;
 }
 
 .yps-sort-toggle {
